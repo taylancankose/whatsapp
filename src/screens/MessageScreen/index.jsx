@@ -9,6 +9,7 @@ import React from "react";
 import bg from "../../../assets/images/BG.png";
 import Dialog from "../../components/Dialog";
 import messages from "../../../assets/data/messages.json";
+import InputBox from "../../components/InputBox";
 
 const MessageScreen = () => {
   console.log(messages, "s");
@@ -23,6 +24,7 @@ const MessageScreen = () => {
         renderItem={({ item }) => <Dialog message={item} />}
         showsVerticalScrollIndicator={false}
       />
+      <InputBox />
     </ImageBackground>
   );
 };

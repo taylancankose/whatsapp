@@ -34,6 +34,7 @@ const styles = StyleSheet.create({
   container: {
     margin: 5,
     padding: 10,
+    paddingHorizontal: 12,
     borderRadius: 10,
     maxWidth: "80%",
   },
