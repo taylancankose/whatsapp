@@ -2,6 +2,7 @@ import { View, Text, Image, StyleSheet } from "react-native";
 import React from "react";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
+import useTimeFormatter from "../../hooks/useTimeFormatter";
 dayjs.extend(relativeTime);
 
 const ChatListItem = ({ item }) => {
@@ -19,7 +20,7 @@ const ChatListItem = ({ item }) => {
             {item.user.name}
           </Text>
           <Text style={styles.hour}>
-            {dayjs(item.lastMessage.createdAt).fromNow(true)}
+            {useTimeFormatter(item.lastMessage.createdAt)}
           </Text>
         </View>
         <Text numberOfLines={2} style={styles.subTitle}>
