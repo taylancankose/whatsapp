@@ -55,7 +55,7 @@ const MainTabNavigator = () => {
             <Entypo
               onPress={() => navigation.navigate("Contacts")}
               name="new-message"
-              size={18}
+              size={20}
               color={"royalblue"}
               style={{ marginRight: 15 }}
             />
