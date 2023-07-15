@@ -4,11 +4,6 @@ import { StyleSheet } from "react-native";
 import useTimeFormatter from "../../hooks/useTimeFormatter";
 
 const Dialog = ({ message }) => {
-  const isMyMessage = () => {
-    return (message.user.id = "u1");
-  };
-  console.log(message.user.id);
-
   return (
     <View
       style={[
