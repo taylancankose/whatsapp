@@ -33,8 +33,11 @@ const styles = StyleSheet.create({
     marginVertical: 5,
     height: 70,
     alignItems: "center",
+    paddingRight: 10,
   },
-
+  content: {
+    flex: 1,
+  },
   image: {
     width: 60,
     height: 60,
