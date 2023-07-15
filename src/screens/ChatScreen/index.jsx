@@ -9,6 +9,8 @@ const ChatScreen = () => {
     <SafeAreaView
       style={{
         flex: 1,
+        backgroundColor: "white",
+        justifyContent: "center",
       }}
     >
       {chats.length > 0 && (
@@ -17,6 +19,7 @@ const ChatScreen = () => {
           data={chats}
           style={{
             backgroundColor: "white",
+            marginTop: -25,
           }}
           renderItem={({ item }) => <ChatListItem item={item} />}
         />

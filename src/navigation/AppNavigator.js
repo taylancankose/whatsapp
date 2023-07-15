@@ -3,8 +3,8 @@ import React from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { NavigationContainer } from "@react-navigation/native";
 import MessageScreen from "../screens/MessageScreen";
-import ChatScreen from "../screens/ChatScreen";
 import MainTabNavigator from "./MainTabNavigator";
+import ContactsScreen from "../screens/ContactsScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -24,6 +24,7 @@ const AppNavigator = () => {
           }}
         />
         <Stack.Screen name="Message" component={MessageScreen} />
+        <Stack.Screen name="Contacts" component={ContactsScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );
