@@ -1,7 +1,8 @@
-import { View, Text, FlatList, SafeAreaView } from "react-native";
+import { FlatList } from "react-native";
 import React from "react";
 import ChatListItem from "../../components/ChatListItem";
 import chats from "../../../assets/data/chats.json";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const ChatScreen = () => {
   return (
@@ -14,6 +15,9 @@ const ChatScreen = () => {
         <FlatList
           keyExtractor={(item) => item.id}
           data={chats}
+          style={{
+            backgroundColor: "white",
+          }}
           renderItem={({ item }) => <ChatListItem item={item} />}
         />
       )}
