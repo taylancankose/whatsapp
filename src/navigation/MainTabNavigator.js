@@ -4,6 +4,7 @@ import NotImplementedScreen from "../screens/NotImplementedScreen";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Ionicons, Entypo } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
+import Settings from "../screens/Settings";
 
 const Tab = createBottomTabNavigator();
 
@@ -64,7 +65,7 @@ const MainTabNavigator = () => {
       />
       <Tab.Screen
         name="Settings"
-        component={NotImplementedScreen}
+        component={Settings}
         options={{
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="settings-outline" size={size} color={color} />
