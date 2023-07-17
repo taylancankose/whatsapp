@@ -1,39 +1,54 @@
 import { View, Text, Image, StyleSheet, Pressable } from "react-native";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import useTimeFormatter from "../../hooks/useTimeFormatter";
 import { useNavigation } from "@react-navigation/native";
+import { Auth } from "aws-amplify";
 dayjs.extend(relativeTime);
 
 const ChatListItem = ({ item }) => {
   const navigation = useNavigation();
+  const [user, setUser] = useState();
+
+  useEffect(() => {
+    const getUser = async () => {
+      const authUser = await Auth.currentAuthenticatedUser();
+      const userItem = item.users.items.find(
+        (item) => item.user.id !== authUser.attributes.sub
+      );
+      setUser(userItem?.user);
+    };
+    getUser();
+  }, []);
+
   const navigateMessage = () => {
     navigation.navigate("Message", {
       id: item.id,
-      name: item.user.name,
+      name: user.name,
     });
   };
+
   return (
     <Pressable onPress={navigateMessage}>
       <View style={styles.container}>
         <Image
           source={{
-            uri: item.user.image,
+            uri: user?.image,
           }}
           style={styles.image}
         />
         <View style={styles.content}>
           <View style={styles.row}>
             <Text numberOfLines={1} style={styles.name}>
-              {item.user.name}
+              {user?.name}
             </Text>
             <Text style={styles.hour}>
-              {useTimeFormatter(item.lastMessage.createdAt)}
+              {useTimeFormatter(item?.LastMessage?.createdAt)}
             </Text>
           </View>
           <Text numberOfLines={2} style={styles.subTitle}>
-            {item.lastMessage.text}
+            {item?.LastMessage?.text}
           </Text>
         </View>
       </View>
