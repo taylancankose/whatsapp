@@ -43,9 +43,11 @@ const ChatListItem = ({ item }) => {
             <Text numberOfLines={1} style={styles.name}>
               {user?.name}
             </Text>
-            <Text style={styles.hour}>
-              {useTimeFormatter(item?.LastMessage?.createdAt)}
-            </Text>
+            {item?.LastMessage?.text && (
+              <Text style={styles.hour}>
+                {useTimeFormatter(item?.LastMessage?.createdAt)}
+              </Text>
+            )}
           </View>
           <Text numberOfLines={2} style={styles.subTitle}>
             {item?.LastMessage?.text}
