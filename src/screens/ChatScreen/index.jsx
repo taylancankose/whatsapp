@@ -1,10 +1,26 @@
 import { FlatList } from "react-native";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import ChatListItem from "../../components/ChatListItem";
 import chats from "../../../assets/data/chats.json";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { API, graphqlOperation, Auth } from "aws-amplify";
+import { listChatRooms } from "./queries";
 
 const ChatScreen = () => {
+  const [chatRooms, setChatRooms] = useState();
+
+  useEffect(() => {
+    const getChatRooms = async () => {
+      const authUser = await Auth.currentAuthenticatedUser();
+      const response = await API.graphql(
+        graphqlOperation(listChatRooms, { id: authUser?.attributes?.sub })
+      );
+
+      setChatRooms(response.data?.getUser?.ChatRooms.items);
+    };
+    getChatRooms();
+  }, []);
+
   return (
     <SafeAreaView
       style={{
@@ -15,13 +31,13 @@ const ChatScreen = () => {
     >
       {chats.length > 0 && (
         <FlatList
-          keyExtractor={(item) => item.id}
-          data={chats}
+          keyExtractor={(item) => item.chatRoom.id}
+          data={chatRooms}
           style={{
             backgroundColor: "white",
             marginTop: -25,
           }}
-          renderItem={({ item }) => <ChatListItem item={item} />}
+          renderItem={({ item }) => <ChatListItem item={item.chatRoom} />}
         />
       )}
     </SafeAreaView>

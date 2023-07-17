@@ -1,6 +1,4 @@
 import {
-  View,
-  Text,
   StyleSheet,
   TextInput,
   KeyboardAvoidingView,
@@ -9,12 +7,36 @@ import {
 import React, { useState } from "react";
 import { AntDesign, MaterialIcons } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { API, graphqlOperation, Auth } from "aws-amplify";
+import { createMessage, updateChatRoom } from "../../graphql/mutations";
 
-const InputBox = () => {
-  const [input, setInput] = useState("");
-  const onSend = () => {
-    console.warn("Sending a new message: ", input);
-    setInput("");
+const InputBox = ({ chatRoom }) => {
+  const [text, setText] = useState("");
+
+  const onSend = async () => {
+    const userAuth = await Auth.currentAuthenticatedUser();
+
+    const newInput = {
+      chatroomID: chatRoom.id,
+      text,
+      userID: userAuth.attributes.sub,
+    };
+
+    const newMessageDate = await API.graphql(
+      graphqlOperation(createMessage, { input: newInput })
+    );
+    setText("");
+
+    // set the new message as the LastMessage of the ChatRoom
+    await API.graphql(
+      graphqlOperation(updateChatRoom, {
+        input: {
+          _version: chatRoom._version,
+          chatRoomLastMessageId: newMessageDate.data?.createMessage?.id,
+          id: chatRoom.id,
+        },
+      })
+    );
   };
 
   return (
@@ -25,15 +47,15 @@ const InputBox = () => {
       >
         <AntDesign name="plus" size={20} color="royalblue" />
         <TextInput
-          onChangeText={(txt) => setInput(txt)}
-          value={input}
+          onChangeText={(txt) => setText(txt)}
+          value={text}
           style={styles.input}
           placeholder="type your message"
           placeholderTextColor="#a6a6a6a6"
         />
         <MaterialIcons
           onPress={onSend}
-          disabled={input === ""}
+          disabled={text === ""}
           style={styles.send}
           name="send"
           size={16}
