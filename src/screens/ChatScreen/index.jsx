@@ -8,7 +8,6 @@ import { listChatRooms } from "./queries";
 
 const ChatScreen = () => {
   const [chatRooms, setChatRooms] = useState();
-
   useEffect(() => {
     const getChatRooms = async () => {
       const authUser = await Auth.currentAuthenticatedUser();
@@ -16,7 +15,14 @@ const ChatScreen = () => {
         graphqlOperation(listChatRooms, { id: authUser?.attributes?.sub })
       );
 
-      setChatRooms(response.data?.getUser?.ChatRooms.items);
+      const rooms = response.data?.getUser?.ChatRooms?.items || [];
+      const sortedRooms = rooms.sort(
+        (room1, room2) =>
+          new Date(room2.chatRoom.updatedAt) -
+          new Date(room1.chatRoom.updatedAt)
+      );
+
+      setChatRooms(sortedRooms);
     };
     getChatRooms();
   }, []);
