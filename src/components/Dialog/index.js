@@ -1,19 +1,25 @@
 import { View, Text } from "react-native";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { StyleSheet } from "react-native";
 import useTimeFormatter from "../../hooks/useTimeFormatter";
+import { Auth } from "aws-amplify";
 
 const Dialog = ({ message }) => {
-  const isMyMessage = () => {
-    return (message.user.id = "u1");
-  };
-  console.log(message.user.id);
+  const [user, setUser] = useState();
+
+  useEffect(() => {
+    const authUser = async () => {
+      const res = await Auth.currentAuthenticatedUser();
+      setUser(res);
+    };
+    authUser();
+  }, []);
 
   return (
     <View
       style={[
         styles.container,
-        message.user.id === "u1"
+        message.userID === user?.attributes?.sub
           ? {
               backgroundColor: "#DCF8C5",
               alignSelf: "flex-end",
