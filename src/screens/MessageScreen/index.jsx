@@ -7,6 +7,7 @@ import { useNavigation, useRoute } from "@react-navigation/native";
 import { API, graphqlOperation } from "aws-amplify";
 import { getChatRoom, listMessagesByChatRoom } from "../../graphql/queries";
 import { ActivityIndicator } from "react-native";
+import { onCreateMessage } from "../../graphql/subscriptions";
 
 const MessageScreen = () => {
   const [messages, setMessages] = useState([]);
@@ -16,18 +17,32 @@ const MessageScreen = () => {
   const [chatRoom, setChatRoom] = useState();
 
   useEffect(() => {
+    // fetch chatroom
     API.graphql(graphqlOperation(getChatRoom, { id: id })).then((result) => {
       setChatRoom(result.data?.getChatRoom);
     });
   }, [id]);
 
   useEffect(() => {
+    // fetch messages
     API.graphql(
       graphqlOperation(listMessagesByChatRoom, {
         chatroomID: id,
         sortDirection: "DESC",
       })
     ).then((res) => setMessages(res?.data?.listMessagesByChatRoom?.items));
+
+    // subscribe to new messages
+    const subscription = API.graphql(
+      graphqlOperation(onCreateMessage, { filter: { chatroomID: { eq: id } } })
+    ).subscribe({
+      next: (value) => {
+        console.log(value.value.data.onCreateMessage, "value");
+        setMessages((m) => [value.value.data.onCreateMessage, ...m]);
+      },
+      onError: (err) => console.log(err, "hata"),
+    });
+    return () => subscription.unsubscribe();
   }, [id]);
 
   useLayoutEffect(() => {
