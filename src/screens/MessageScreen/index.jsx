@@ -7,7 +7,7 @@ import { useNavigation, useRoute } from "@react-navigation/native";
 import { API, graphqlOperation } from "aws-amplify";
 import { getChatRoom, listMessagesByChatRoom } from "../../graphql/queries";
 import { ActivityIndicator } from "react-native";
-import { onCreateMessage } from "../../graphql/subscriptions";
+import { onCreateMessage, onUpdateChatRoom } from "../../graphql/subscriptions";
 
 const MessageScreen = () => {
   const [messages, setMessages] = useState([]);
@@ -21,6 +21,20 @@ const MessageScreen = () => {
     API.graphql(graphqlOperation(getChatRoom, { id: id })).then((result) => {
       setChatRoom(result.data?.getChatRoom);
     });
+
+    const subscription = API.graphql(
+      graphqlOperation(onUpdateChatRoom, { filter: { id: { eq: id } } })
+    ).subscribe({
+      next: (value) => {
+        console.log(value.value.data.onUpdateChatRoom, "v12321");
+        setChatRoom((cr) => ({
+          ...(cr || {}),
+          ...value.value.data.onUpdateChatRoom,
+        }));
+      },
+      onError: (err) => console.log(err, "hata"),
+    });
+    return () => subscription.unsubscribe();
   }, [id]);
 
   useEffect(() => {

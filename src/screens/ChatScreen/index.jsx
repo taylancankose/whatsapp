@@ -8,23 +8,28 @@ import { listChatRooms } from "./queries";
 
 const ChatScreen = () => {
   const [chatRooms, setChatRooms] = useState();
+  const [loading, setLoading] = useState(false);
+
+  const fetchChatRooms = async () => {
+    setLoading(true);
+    const authUser = await Auth.currentAuthenticatedUser();
+    const response = await API.graphql(
+      graphqlOperation(listChatRooms, { id: authUser?.attributes?.sub })
+    );
+
+    const rooms = response.data?.getUser?.ChatRooms?.items || [];
+    const sortedRooms = rooms.sort(
+      (room1, room2) =>
+        new Date(room2.chatRoom.updatedAt) - new Date(room1.chatRoom.updatedAt)
+    );
+
+    setChatRooms(sortedRooms);
+
+    setLoading(false);
+  };
+
   useEffect(() => {
-    const getChatRooms = async () => {
-      const authUser = await Auth.currentAuthenticatedUser();
-      const response = await API.graphql(
-        graphqlOperation(listChatRooms, { id: authUser?.attributes?.sub })
-      );
-
-      const rooms = response.data?.getUser?.ChatRooms?.items || [];
-      const sortedRooms = rooms.sort(
-        (room1, room2) =>
-          new Date(room2.chatRoom.updatedAt) -
-          new Date(room1.chatRoom.updatedAt)
-      );
-
-      setChatRooms(sortedRooms);
-    };
-    getChatRooms();
+    fetchChatRooms();
   }, []);
 
   return (
@@ -44,6 +49,8 @@ const ChatScreen = () => {
             marginTop: -25,
           }}
           renderItem={({ item }) => <ChatListItem item={item.chatRoom} />}
+          refreshing={loading}
+          onRefresh={fetchChatRooms}
         />
       )}
     </SafeAreaView>

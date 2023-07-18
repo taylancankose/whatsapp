@@ -4,27 +4,46 @@ import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import useTimeFormatter from "../../hooks/useTimeFormatter";
 import { useNavigation } from "@react-navigation/native";
+import { onUpdateChatRoom } from "../../graphql/subscriptions";
+import { API, graphqlOperation } from "aws-amplify";
 import { Auth } from "aws-amplify";
 dayjs.extend(relativeTime);
 
 const ChatListItem = ({ item }) => {
   const navigation = useNavigation();
   const [user, setUser] = useState();
+  const [chatRoom, setChatRoom] = useState(item);
 
   useEffect(() => {
     const getUser = async () => {
       const authUser = await Auth.currentAuthenticatedUser();
-      const userItem = item.users.items.find(
-        (item) => item.user.id !== authUser.attributes.sub
+      const userItem = chatRoom.users.items.find(
+        (chatRoom) => chatRoom.user.id !== authUser.attributes.sub
       );
       setUser(userItem?.user);
     };
     getUser();
   }, []);
 
+  useEffect(() => {
+    const subscription = API.graphql(
+      graphqlOperation(onUpdateChatRoom, { filter: { id: { eq: item.id } } })
+    ).subscribe({
+      next: (value) => {
+        console.log(value.value.data.onUpdateChatRoom, "v12321");
+        setChatRoom((cr) => ({
+          ...(cr || {}),
+          ...value.value.data.onUpdateChatRoom,
+        }));
+      },
+      onError: (err) => console.log(err, "hata"),
+    });
+    return () => subscription.unsubscribe();
+  }, [item.id]);
+
   const navigateMessage = () => {
     navigation.navigate("Message", {
-      id: item.id,
+      id: chatRoom.id,
       name: user.name,
     });
   };
@@ -43,14 +62,14 @@ const ChatListItem = ({ item }) => {
             <Text numberOfLines={1} style={styles.name}>
               {user?.name}
             </Text>
-            {item?.LastMessage?.text && (
+            {chatRoom?.LastMessage?.text && (
               <Text style={styles.hour}>
-                {useTimeFormatter(item?.LastMessage?.createdAt)}
+                {useTimeFormatter(chatRoom?.LastMessage?.createdAt)}
               </Text>
             )}
           </View>
           <Text numberOfLines={2} style={styles.subTitle}>
-            {item?.LastMessage?.text}
+            {chatRoom?.LastMessage?.text}
           </Text>
         </View>
       </View>
