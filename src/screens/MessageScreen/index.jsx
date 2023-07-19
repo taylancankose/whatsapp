@@ -15,10 +15,11 @@ const MessageScreen = () => {
   const route = useRoute();
   const { id, name } = route.params;
   const [chatRoom, setChatRoom] = useState();
+  console.log(name);
 
   useEffect(() => {
     // fetch chatroom
-    API.graphql(graphqlOperation(getChatRoom, { id: id })).then((result) => {
+    API.graphql(graphqlOperation(getChatRoom, { id })).then((result) => {
       setChatRoom(result.data?.getChatRoom);
     });
 
@@ -26,7 +27,6 @@ const MessageScreen = () => {
       graphqlOperation(onUpdateChatRoom, { filter: { id: { eq: id } } })
     ).subscribe({
       next: (value) => {
-        console.log(value.value.data.onUpdateChatRoom, "v12321");
         setChatRoom((cr) => ({
           ...(cr || {}),
           ...value.value.data.onUpdateChatRoom,
@@ -39,6 +39,7 @@ const MessageScreen = () => {
 
   useEffect(() => {
     // fetch messages
+
     API.graphql(
       graphqlOperation(listMessagesByChatRoom, {
         chatroomID: id,
@@ -51,7 +52,6 @@ const MessageScreen = () => {
       graphqlOperation(onCreateMessage, { filter: { chatroomID: { eq: id } } })
     ).subscribe({
       next: (value) => {
-        console.log(value.value.data.onCreateMessage, "value");
         setMessages((m) => [value.value.data.onCreateMessage, ...m]);
       },
       onError: (err) => console.log(err, "hata"),
@@ -68,7 +68,7 @@ const MessageScreen = () => {
             fontSize: 18,
           }}
         >
-          {name}
+          {name ? name : "Chat"}
         </Text>
       ),
     });

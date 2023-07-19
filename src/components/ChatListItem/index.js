@@ -30,7 +30,6 @@ const ChatListItem = ({ item }) => {
       graphqlOperation(onUpdateChatRoom, { filter: { id: { eq: item.id } } })
     ).subscribe({
       next: (value) => {
-        console.log(value.value.data.onUpdateChatRoom, "v12321");
         setChatRoom((cr) => ({
           ...(cr || {}),
           ...value.value.data.onUpdateChatRoom,

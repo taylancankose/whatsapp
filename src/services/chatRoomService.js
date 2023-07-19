@@ -7,11 +7,14 @@ export const getCommonChatRoomWithUser = async (userID) => {
     graphqlOperation(listChatRooms, { id: authUser.attributes.sub })
   );
   const chatRooms = response.data?.getUser.ChatRooms.items || [];
-  const chatRoom = chatRooms.find((chatRoomItem) =>
-    chatRoomItem.chatRoom.users.items.some(
-      (userItem) => userItem.user.id === userID
-    )
-  );
+  const chatRoom = chatRooms.find((chatRoomItem) => {
+    return (
+      chatRoomItem.chatRoom.users.items.length === 2 &&
+      chatRoomItem.chatRoom.users.items.some(
+        (userItem) => userItem.user.id === userID
+      )
+    );
+  });
   return chatRoom;
   // get all chatrooms of user2
   // remove chat rooms with more than 2 users
