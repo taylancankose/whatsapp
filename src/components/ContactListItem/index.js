@@ -1,11 +1,17 @@
 import { Text, Image, StyleSheet, Pressable, View } from "react-native";
+import { AntDesign, FontAwesome } from "@expo/vector-icons";
 
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 
 dayjs.extend(relativeTime);
 
-const ContactListItem = ({ user, onPress }) => {
+const ContactListItem = ({
+  user,
+  onPress,
+  selectable = false,
+  isSelected = false,
+}) => {
   return (
     <Pressable onPress={onPress} style={styles.container}>
       <Image source={{ uri: user.image }} style={styles.image} />
@@ -19,6 +25,12 @@ const ContactListItem = ({ user, onPress }) => {
           {user.status}
         </Text>
       </View>
+      {selectable &&
+        (isSelected ? (
+          <AntDesign name="checkcircle" size={24} color="royalblue" />
+        ) : (
+          <FontAwesome name="circle-thin" size={24} color="lightgray" />
+        ))}
     </Pressable>
   );
 };
@@ -34,6 +46,7 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
+    marginRight: 10,
   },
   image: {
     width: 60,

@@ -58,6 +58,7 @@ const MessageScreen = () => {
     });
     return () => subscription.unsubscribe();
   }, [id]);
+  console.log(JSON.stringify(chatRoom));
 
   useLayoutEffect(() => {
     navigation.setOptions({
