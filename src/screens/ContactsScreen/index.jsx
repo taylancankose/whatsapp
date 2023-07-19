@@ -59,10 +59,6 @@ const ContactsScreen = () => {
         input: { chatRoomId: newChatRoom.id, userId: authUser.attributes.sub },
       })
     );
-    console.log(
-      addedUser?.data?.createUserChatRoom?.user?.name,
-      "sajdahsjdhaskdjashjk"
-    );
 
     // Navigate to the newly created ChatRoom
     navigation.navigate("Message", {

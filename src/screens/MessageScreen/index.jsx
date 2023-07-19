@@ -8,6 +8,7 @@ import { API, graphqlOperation } from "aws-amplify";
 import { getChatRoom, listMessagesByChatRoom } from "../../graphql/queries";
 import { ActivityIndicator } from "react-native";
 import { onCreateMessage, onUpdateChatRoom } from "../../graphql/subscriptions";
+import { Feather } from "@expo/vector-icons";
 
 const MessageScreen = () => {
   const [messages, setMessages] = useState([]);
@@ -58,7 +59,6 @@ const MessageScreen = () => {
     });
     return () => subscription.unsubscribe();
   }, [id]);
-  console.log(JSON.stringify(chatRoom));
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -72,8 +72,16 @@ const MessageScreen = () => {
           {name ? name : "Chat"}
         </Text>
       ),
+      headerRight: () => (
+        <Feather
+          name="more-vertical"
+          size={24}
+          color={"gray"}
+          onPress={() => navigation.navigate("Group Info", { id: id })}
+        />
+      ),
     });
-  }, [name]);
+  }, [name, id]);
 
   if (!chatRoom) {
     return <ActivityIndicator />;

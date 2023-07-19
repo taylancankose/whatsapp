@@ -59,7 +59,7 @@ const ChatListItem = ({ item }) => {
         <View style={styles.content}>
           <View style={styles.row}>
             <Text numberOfLines={1} style={styles.name}>
-              {user?.name}
+              {chatRoom.name || user?.name}
             </Text>
             {chatRoom?.LastMessage?.text && (
               <Text style={styles.hour}>

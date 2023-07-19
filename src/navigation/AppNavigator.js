@@ -6,6 +6,8 @@ import MessageScreen from "../screens/MessageScreen";
 import MainTabNavigator from "./MainTabNavigator";
 import NewGroupScreen from "../screens/NewGroupScreen";
 import ContactsScreen from "../screens/ContactsScreen";
+import GroupInfoScreen from "../screens/GroupInfoScreen";
+import AddUserToGroupScreen from "../screens/AddUserToGroupScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -27,6 +29,8 @@ const AppNavigator = () => {
         <Stack.Screen name="Message" component={MessageScreen} />
         <Stack.Screen name="Contacts" component={ContactsScreen} />
         <Stack.Screen name="New Group" component={NewGroupScreen} />
+        <Stack.Screen name="Group Info" component={GroupInfoScreen} />
+        <Stack.Screen name="Add User" component={AddUserToGroupScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

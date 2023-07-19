@@ -31,7 +31,6 @@ function App() {
         name: authUser?.attributes?.email.split("@")[0],
         status: "Hey, I am using WhatsApp",
       };
-      console.log(newUser);
 
       const newUserResponse = await API.graphql(
         graphqlOperation(createUser, { input: newUser })
