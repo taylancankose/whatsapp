@@ -40,14 +40,12 @@ const MessageScreen = () => {
 
   useEffect(() => {
     // fetch messages
-
     API.graphql(
       graphqlOperation(listMessagesByChatRoom, {
         chatroomID: id,
         sortDirection: "DESC",
       })
     ).then((res) => setMessages(res?.data?.listMessagesByChatRoom?.items));
-    console.log(messages);
 
     // subscribe to new messages
     const subscription = API.graphql(
@@ -60,6 +58,7 @@ const MessageScreen = () => {
     });
     return () => subscription.unsubscribe();
   }, [id]);
+
   console.log(messages, "sadh");
 
   useLayoutEffect(() => {

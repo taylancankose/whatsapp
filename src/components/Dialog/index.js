@@ -7,12 +7,13 @@ import { S3Image } from "aws-amplify-react-native/dist/Storage";
 import ImageView from "react-native-image-viewing";
 import { Pressable } from "react-native";
 import { TouchableOpacity } from "react-native";
+import { useWindowDimensions } from "react-native";
 
 const Dialog = ({ message }) => {
   const [user, setUser] = useState();
   const [imageSources, setImageSources] = useState([]);
   const [imageViewerVisible, setImageViewerVisible] = useState(false);
-
+  const { width } = useWindowDimensions();
   useEffect(() => {
     const authUser = async () => {
       const res = await Auth.currentAuthenticatedUser();
@@ -23,16 +24,18 @@ const Dialog = ({ message }) => {
 
   useEffect(() => {
     const downloadImages = async () => {
-      if (message.images?.length > 0) {
-        const uri = await Storage.get(message.images[0]);
-        setImageSources([{ uri }]);
+      if (message?.images?.length > 0) {
+        const uris = await Promise.all(
+          message?.images?.map((img) => Storage.get(img))
+        );
+        console.log(uris);
+
+        setImageSources(uris.map((uri) => ({ uri })));
       }
     };
 
     downloadImages();
   }, [message.images]);
-
-  console.log(imageSources);
 
   return (
     <View
@@ -49,18 +52,28 @@ const Dialog = ({ message }) => {
             },
       ]}
     >
-      {message.images?.length > 0 && (
-        <>
-          <TouchableOpacity onPress={() => setImageViewerVisible(true)}>
-            <Image source={imageSources[0]} style={styles.image} />
-          </TouchableOpacity>
+      {imageSources.length > 0 && (
+        <View style={{ width: width * 0.8 - 30 }}>
+          <View style={styles.images}>
+            {imageSources.map((imageSource) => (
+              <Pressable
+                style={[
+                  styles.imageContainer,
+                  imageSources.length === 1 && { flex: 1 },
+                ]}
+                onPress={() => setImageViewerVisible(true)}
+              >
+                <Image source={imageSource} style={styles.image} />
+              </Pressable>
+            ))}
+          </View>
           <ImageView
             images={imageSources}
             imageIndex={0}
             visible={imageViewerVisible}
             onRequestClose={() => setImageViewerVisible(false)}
           />
-        </>
+        </View>
       )}
       <Text>{message.text}</Text>
       <Text style={styles.time}>{useTimeFormatter(message.createdAt)}</Text>
@@ -80,11 +93,18 @@ const styles = StyleSheet.create({
     color: "gray",
     alignSelf: "flex-end",
   },
-  image: {
-    width: 200,
-    height: 100,
+  images: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+  },
+  imageContainer: {
+    width: "45%",
     borderColor: "white",
-    borderWidth: 2,
+    margin: 2,
+  },
+  image: {
+    flex: 1,
+    aspectRatio: 1,
     borderRadius: 5,
   },
 });
