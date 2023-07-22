@@ -1,13 +1,17 @@
-import { View, Text } from "react-native";
+import { View, Text, Image } from "react-native";
 import React, { useEffect, useState } from "react";
 import { StyleSheet } from "react-native";
 import useTimeFormatter from "../../hooks/useTimeFormatter";
-import { Auth } from "aws-amplify";
+import { Auth, Storage } from "aws-amplify";
 import { S3Image } from "aws-amplify-react-native/dist/Storage";
+import ImageView from "react-native-image-viewing";
+import { Pressable } from "react-native";
+import { TouchableOpacity } from "react-native";
 
 const Dialog = ({ message }) => {
   const [user, setUser] = useState();
-  console.log(message.images);
+  const [imageSources, setImageSources] = useState([]);
+  const [imageViewerVisible, setImageViewerVisible] = useState(false);
 
   useEffect(() => {
     const authUser = async () => {
@@ -16,6 +20,19 @@ const Dialog = ({ message }) => {
     };
     authUser();
   }, []);
+
+  useEffect(() => {
+    const downloadImages = async () => {
+      if (message.images?.length > 0) {
+        const uri = await Storage.get(message.images[0]);
+        setImageSources([{ uri }]);
+      }
+    };
+
+    downloadImages();
+  }, [message.images]);
+
+  console.log(imageSources);
 
   return (
     <View
@@ -33,7 +50,17 @@ const Dialog = ({ message }) => {
       ]}
     >
       {message.images?.length > 0 && (
-        <S3Image imgKey={message.images[0]} style={styles.image} />
+        <>
+          <TouchableOpacity onPress={() => setImageViewerVisible(true)}>
+            <Image source={imageSources[0]} style={styles.image} />
+          </TouchableOpacity>
+          <ImageView
+            images={imageSources}
+            imageIndex={0}
+            visible={imageViewerVisible}
+            onRequestClose={() => setImageViewerVisible(false)}
+          />
+        </>
       )}
       <Text>{message.text}</Text>
       <Text style={styles.time}>{useTimeFormatter(message.createdAt)}</Text>
