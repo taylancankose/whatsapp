@@ -204,6 +204,7 @@ export const createMessage = /* GraphQL */ `
       text
       chatroomID
       userID
+      images
       updatedAt
       _version
       _deleted

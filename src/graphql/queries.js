@@ -257,6 +257,7 @@ export const listMessagesByChatRoom = /* GraphQL */ `
         text
         chatroomID
         userID
+        images
         updatedAt
         _version
         _deleted
